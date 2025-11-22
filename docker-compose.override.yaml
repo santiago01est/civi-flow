@@ -1,1 +1,4 @@
-version: '3.8' #mock
+services:
+  client:
+    ports:
+      - "3001:80"

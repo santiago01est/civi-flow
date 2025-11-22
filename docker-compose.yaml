@@ -1,1 +1,11 @@
-version: '3.8' #mock
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    networks:
+      - civ-flow-front
+
+networks:
+  civ-flow-front:
+    driver: bridge
