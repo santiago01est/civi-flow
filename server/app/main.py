@@ -4,7 +4,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.config.settings import settings
-#from app.config.telemetry import setup_opentelemetry
 from app.api.v1.router import api_router
 from app.core.exceptions import setup_exception_handlers
 import logging
@@ -28,14 +27,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configure OpenTelemetry
-'''
-tracer, meter = setup_opentelemetry(
-    app=app,
-    service_name=settings.SERVICE_NAME,
-    otlp_endpoint=settings.OTEL_EXPORTER_OTLP_ENDPOINT
-)
-'''
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
