@@ -18,7 +18,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       <div className="flex justify-end mb-8">
         <div className="bg-gray-200 text-slate-800 rounded-2xl rounded-tr-none px-6 py-4 max-w-[80%] md:max-w-[60%] shadow-sm">
           <div className="flex items-center gap-2 mb-1 opacity-70">
-             <span className="font-semibold text-xs uppercase tracking-wider text-gray-600">User</span>
+            <span className="font-semibold text-xs uppercase tracking-wider text-gray-600">User</span>
           </div>
           <p className="text-md leading-relaxed">{message.content}</p>
         </div>
@@ -33,10 +33,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           <Bot size={20} />
         </div>
       </div>
-      
+
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-3 mb-1">
-          <span className="font-bold text-slate-900">CivicLink Assistant</span>
+          <span className="font-bold text-slate-900">CivicFlow Assistant</span>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-0 overflow-hidden">
@@ -47,49 +47,49 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           </div>
 
           <div className="p-5">
-             {message.isThinking ? (
-               <div className="flex items-center gap-2 text-gray-500 animate-pulse">
-                 <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                 <div className="w-2 h-2 bg-teal-500 rounded-full delay-75"></div>
-                 <div className="w-2 h-2 bg-teal-500 rounded-full delay-150"></div>
-                 <span className="text-sm">Analyzing city documents...</span>
-               </div>
-             ) : (
+            {message.isThinking ? (
+              <div className="flex items-center gap-2 text-gray-500 animate-pulse">
+                <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-teal-500 rounded-full delay-75"></div>
+                <div className="w-2 h-2 bg-teal-500 rounded-full delay-150"></div>
+                <span className="text-sm">Analyzing city documents...</span>
+              </div>
+            ) : (
               <div className="text-slate-700 leading-relaxed space-y-4">
                 <p>{message.content}</p>
               </div>
-             )}
+            )}
 
-             {/* Sources & Citations Section */}
-             {message.citations && message.citations.length > 0 && (
-               <div className="mt-6 pt-4 border-t border-gray-100">
-                 <h4 className="text-sm font-bold text-slate-900 mb-3">Sources & Citations:</h4>
-                 <div className="space-y-2">
-                   {message.citations.map((citation) => (
-                     <a 
-                        key={citation.id}
-                        href={citation.uri}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-2 rounded-md bg-teal-50 border border-teal-100 hover:bg-teal-100 transition-colors group"
-                     >
-                       <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded bg-teal-600 text-white text-xs font-bold">
-                         {citation.id}
-                       </span>
-                       <FileText size={16} className="text-teal-700" />
-                       <span className="text-sm font-medium text-teal-900 truncate underline-offset-2 group-hover:underline">
-                         {citation.title}
-                       </span>
-                       {citation.type && (
-                         <span className="ml-auto text-xs text-teal-600 font-medium px-2 py-0.5 bg-white rounded-full border border-teal-100">
-                           {citation.type} {citation.size ? `, ${citation.size}` : ''}
-                         </span>
-                       )}
-                     </a>
-                   ))}
-                 </div>
-               </div>
-             )}
+            {/* Sources & Citations Section */}
+            {message.citations && message.citations.length > 0 && (
+              <div className="mt-6 pt-4 border-t border-gray-100">
+                <h4 className="text-sm font-bold text-slate-900 mb-3">Sources & Citations:</h4>
+                <div className="space-y-2">
+                  {message.citations.map((citation) => (
+                    <a
+                      key={citation.id}
+                      href={citation.uri}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-2 rounded-md bg-teal-50 border border-teal-100 hover:bg-teal-100 transition-colors group"
+                    >
+                      <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded bg-teal-600 text-white text-xs font-bold">
+                        {citation.id}
+                      </span>
+                      <FileText size={16} className="text-teal-700" />
+                      <span className="text-sm font-medium text-teal-900 truncate underline-offset-2 group-hover:underline">
+                        {citation.title}
+                      </span>
+                      {citation.type && (
+                        <span className="ml-auto text-xs text-teal-600 font-medium px-2 py-0.5 bg-white rounded-full border border-teal-100">
+                          {citation.type} {citation.size ? `, ${citation.size}` : ''}
+                        </span>
+                      )}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}

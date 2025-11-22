@@ -6,7 +6,7 @@ import { PolicyChat } from '@/pages/PolicyChat';
 import { Sidebar } from '@/components/Sidebar';
 import { NotFoundComponent } from '@/components/404NotFound';
 
-const AppLayout: React.FC = () => {
+export const AppLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (

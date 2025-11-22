@@ -1,5 +1,5 @@
 {
-  "name": "CivicLink AI",
+  "name": "CivicFlow",
   "description": "A civic engagement platform powered by AI to help citizens understand local policies and town hall meetings.",
   "requestFramePermissions": [
     "microphone"
