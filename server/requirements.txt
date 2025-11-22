@@ -1,0 +1,48 @@
+# Core FastAPI
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+
+# Web Server for Production
+gunicorn
+
+# Database
+sqlalchemy
+alembic
+psycopg2-binary
+
+# Authentication & Security
+python-multipart
+pydantic-settings
+python-jose[cryptography]
+passlib[bcrypt]
+
+# Azure Services
+azure-identity
+openai  # This includes AzureOpenAI client
+azure-search-documents
+azure-ai-contentsafety
+
+# OpenTelemetry Core
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-instrumentation
+
+# OpenTelemetry Instrumentations
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-sqlalchemy
+opentelemetry-instrumentation-redis
+opentelemetry-instrumentation-requests
+
+# OpenTelemetry Exporters
+opentelemetry-exporter-otlp-proto-grpc
+opentelemetry-exporter-otlp-proto-http
+
+# Caching & Background Tasks
+redis
+celery
+
+# Utilities
+python-dotenv
+httpx
