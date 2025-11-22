@@ -1,23 +1,12 @@
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './pages/Dashboard';
 import { PolicyChat } from './pages/PolicyChat';
 import { Menu, X } from 'lucide-react';
 
-const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('policy-chat');
+const AppLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'policy-chat':
-        return <PolicyChat />;
-      default:
-        return <Dashboard />;
-    }
-  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -25,13 +14,13 @@ const App: React.FC = () => {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={() => setMobileMenuOpen(false)}>
           <div className="absolute left-0 top-0 h-full z-50" onClick={e => e.stopPropagation()}>
-             <Sidebar activeTab={activeTab} setActiveTab={(tab) => { setActiveTab(tab); setMobileMenuOpen(false); }} />
+             <Sidebar />
           </div>
         </div>
       )}
 
       {/* Desktop Sidebar */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 relative">
@@ -46,11 +35,23 @@ const App: React.FC = () => {
 
         {/* Page Content */}
         <div className="flex-1 overflow-hidden">
-            {renderContent()}
+            <Routes>
+              <Route path="/" element={<Navigate to="/policy-chat" replace />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/policy-chat" element={<PolicyChat />} />
+            </Routes>
         </div>
 
       </div>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <AppLayout />
+    </BrowserRouter>
   );
 };
 
