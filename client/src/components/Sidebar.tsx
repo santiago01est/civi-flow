@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  LayoutDashboard, 
+  Bell,
   MessageSquareText, 
   X
 } from 'lucide-react';
@@ -13,8 +13,8 @@ interface SidebarProps {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', icon: LayoutDashboard, id: 'dashboard', path: '/dashboard' },
   { label: 'Policy Chat', icon: MessageSquareText, id: 'policy-chat', path: '/policy-chat' },
+  { label: 'Notifications', icon: Bell, id: 'notifications', path: '/notifications' },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ className, onClose }) => {
