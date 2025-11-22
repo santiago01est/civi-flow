@@ -26,4 +26,5 @@ export interface NavItem {
   label: string;
   icon: React.ElementType;
   id: string;
+  path?: string;
 }

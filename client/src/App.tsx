@@ -14,13 +14,13 @@ const AppLayout: React.FC = () => {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={() => setMobileMenuOpen(false)}>
           <div className="absolute left-0 top-0 h-full z-50" onClick={e => e.stopPropagation()}>
-             <Sidebar />
+             <Sidebar onClose={() => setMobileMenuOpen(false)} />
           </div>
         </div>
       )}
 
       {/* Desktop Sidebar */}
-      <Sidebar />
+      <Sidebar className="hidden md:flex" />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 relative">
