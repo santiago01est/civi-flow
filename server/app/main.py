@@ -8,6 +8,7 @@ from app.config.settings import settings
 from app.api.v1.router import api_router
 from app.core.exceptions import setup_exception_handlers
 import logging
+from fastapi.responses import RedirectResponse
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,7 +51,7 @@ setup_exception_handlers(app)
 # Include API routers
 app.include_router(api_router, prefix="/api/v1")
 
-from fastapi.responses import RedirectResponse
+
 
 @app.get("/", include_in_schema=False)
 async def root():
