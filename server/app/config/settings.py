@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     AZURE_OPENAI_DEPLOYMENT_NAME: str = ""
     AZURE_OPENAI_API_VERSION: str = "2024-02-01"
     
+    # OpenAI (alternativa a Azure)
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-4o-mini"  # o gpt-4, gpt-3.5-turbo, etc.
+    
     # Azure Search
     AZURE_SEARCH_ENDPOINT: str = ""
     AZURE_SEARCH_API_KEY: str = ""
