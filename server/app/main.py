@@ -6,6 +6,10 @@ from contextlib import asynccontextmanager
 from app.config.settings import settings
 from app.api.v1.router import api_router
 from app.core.exceptions import setup_exception_handlers
+from app.db.base import Base
+from app.db.session import engine
+from app.models.conversation import Conversation, Message
+from app.models.notification import Notification
 import logging
 from fastapi.responses import RedirectResponse
 
@@ -16,6 +20,12 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Civi Chat API...")
+    
+    # Create database tables
+    logger.info("Creating database tables...")
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database initialized successfully")
+    
     yield
     # Shutdown
     logger.info("Shutting down Civi Chat API...")
