@@ -2,7 +2,7 @@
 # app/api/v1/router.py
 
 from fastapi import APIRouter
-from app.api.v1.endpoints import chat, notifications
+from app.api.v1.endpoints import chat, notifications, webhooks, users
 
 api_router = APIRouter()
 
@@ -19,6 +19,16 @@ api_router.include_router(
     prefix="/notifications",
     tags=["notifications"]
 )
+
+# Include user endpoints
+api_router.include_router(
+    users.router,
+    prefix="/users",
+    tags=["users"]
+)
+
+# webhooks endpoints
+api_router.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])
 
 @api_router.get("/")
 async def root():

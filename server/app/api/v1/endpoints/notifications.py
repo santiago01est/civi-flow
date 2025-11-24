@@ -1,32 +1,28 @@
 # User notification preferences
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 from app.schemas.notification import (
     NotificationSchema,
     NotificationListResponse,
     NotificationCreateRequest
 )
 from app.repositories.notification_repository import NotificationRepository
-from app.db.session import get_db
 from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
+notification_repo = NotificationRepository()
 
 @router.get("", response_model=NotificationListResponse)
 async def get_notifications(
     user_id: Optional[str] = None,
-    limit: int = 50,
-    db: Session = Depends(get_db)
+    limit: int = 50
 ):
     """
     Get all notifications, optionally filtered by user
     """
     try:
-        notification_repo = NotificationRepository(db)
         notifications = notification_repo.get_all_notifications(user_id=user_id, limit=limit)
         
         notification_schemas = [
@@ -47,13 +43,11 @@ async def get_notifications(
 @router.post("", response_model=NotificationSchema)
 async def create_notification(
     request: NotificationCreateRequest,
-    db: Session = Depends(get_db)
 ):
     """
     Create a new notification
     """
     try:
-        notification_repo = NotificationRepository(db)
         notification = notification_repo.create_notification(
             title=request.title,
             message=request.message,
@@ -71,13 +65,11 @@ async def create_notification(
 @router.patch("/{notification_id}/read", response_model=NotificationSchema)
 async def mark_notification_read(
     notification_id: str,
-    db: Session = Depends(get_db)
 ):
     """
     Mark a notification as read
     """
     try:
-        notification_repo = NotificationRepository(db)
         notification = notification_repo.mark_as_read(notification_id)
         
         if not notification:

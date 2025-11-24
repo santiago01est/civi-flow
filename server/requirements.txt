@@ -8,9 +8,7 @@ pydantic-settings
 gunicorn
 
 # Database
-sqlalchemy
-alembic
-psycopg2-binary
+azure-cosmos
 
 # Authentication & Security
 python-multipart

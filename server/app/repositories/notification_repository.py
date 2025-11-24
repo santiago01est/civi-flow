@@ -1,16 +1,12 @@
-# Repository for notification CRUD operations
-from sqlalchemy.orm import Session
-from app.models.notification import Notification
+# app/repositories/notification_repository.py
 from typing import List, Optional
-from datetime import datetime
+from app.models.notification import Notification
+from app.repositories.base_repository import BaseRepository
 
+class NotificationRepository(BaseRepository[Notification]):
+    def __init__(self):
+        super().__init__("notifications", Notification)
 
-class NotificationRepository:
-    """Repository for managing notifications"""
-    
-    def __init__(self, db: Session):
-        self.db = db
-    
     def create_notification(
         self,
         title: str,
@@ -18,35 +14,35 @@ class NotificationRepository:
         type: str = "info",
         user_id: Optional[str] = None
     ) -> Notification:
-        """Create a new notification"""
         notification = Notification(
             title=title,
             message=message,
             type=type,
-            user_id=user_id
+            user_id=user_id,
+            read=False
         )
-        self.db.add(notification)
-        self.db.commit()
-        self.db.refresh(notification)
-        return notification
-    
+        return self.create(notification)
+
     def get_all_notifications(
         self,
         user_id: Optional[str] = None,
         limit: int = 50
     ) -> List[Notification]:
-        """Get all notifications, optionally filtered by user"""
-        query = self.db.query(Notification)
         if user_id:
-            query = query.filter(Notification.user_id == user_id)
-        return query.order_by(Notification.created_at.desc()).limit(limit).all()
-    
+            query = "SELECT * FROM c WHERE c.user_id = @user_id ORDER BY c.created_at DESC OFFSET 0 LIMIT @limit"
+            parameters = [
+                {"name": "@user_id", "value": user_id},
+                {"name": "@limit", "value": limit}
+            ]
+        else:
+            query = "SELECT * FROM c ORDER BY c.created_at DESC OFFSET 0 LIMIT @limit"
+            parameters = [{"name": "@limit", "value": limit}]
+        
+        return self.query(query, parameters)
+
     def mark_as_read(self, notification_id: str) -> Optional[Notification]:
-        """Mark notification as read"""
-        notification = self.db.query(Notification).filter(Notification.id == notification_id).first()
+        notification = self.get(notification_id, notification_id)
         if notification:
             notification.read = True
-            notification.updated_at = datetime.utcnow()
-            self.db.commit()
-            self.db.refresh(notification)
-        return notification
+            return self.update(notification_id, notification_id, notification.dict())
+        return None

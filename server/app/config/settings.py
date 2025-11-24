@@ -2,33 +2,19 @@
 # app/config/settings.py
 
 from pydantic_settings import BaseSettings
+from typing import List
 
 class Settings(BaseSettings):
     # Service settings
     SERVICE_NAME: str = "civi-chat-api"
     ENVIRONMENT: str = "development"
     
-    # Azure OpenTelemetry
-    OTEL_EXPORTER_OTLP_ENDPOINT: str = "http://localhost:4317"
-    ALLOWED_ORIGINS: list[str] = ["*"]
-    
-    # Azure OpenAI
-    AZURE_OPENAI_API_KEY: str = ""
-    AZURE_OPENAI_ENDPOINT: str = ""
-    AZURE_OPENAI_DEPLOYMENT_NAME: str = ""
-    AZURE_OPENAI_API_VERSION: str = "2024-02-01"
-    
-    # OpenAI (alternativa a Azure)
-    OPENAI_API_KEY: str = ""
-    OPENAI_MODEL: str = "gpt-4o-mini"  # o gpt-4, gpt-3.5-turbo, etc.
-    
-    # Azure Search
-    AZURE_SEARCH_ENDPOINT: str = ""
-    AZURE_SEARCH_API_KEY: str = ""
-    AZURE_SEARCH_INDEX_NAME: str = ""
-    
-    # Database
-    DATABASE_URL: str = "sqlite:///./civi-chat.db"
+    # Azure Cosmos DB
+    COSMOS_DB_ENDPOINT: str = ""
+    COSMOS_DB_KEY: str = ""
+    COSMOS_DB_DATABASE_NAME: str = "civi-flow"
+    # CORS
+    ALLOWED_ORIGINS: List[str] = ["http://localhost:5173"]
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379"
