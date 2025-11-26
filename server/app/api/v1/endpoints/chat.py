@@ -1,6 +1,6 @@
 # Conversational endpoints
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from azure.cosmos.aio import DatabaseProxy
 from app.schemas.chat import (
     ChatMessageRequest,
     ChatMessageResponse,
@@ -12,7 +12,7 @@ from app.schemas.chat import (
 from app.services.azure_ai_service import AzureOpenAIService
 from app.services.search_service import SearchService
 from app.repositories.conversation_repository import ConversationRepository
-from app.db.session import get_db
+from app.db.mongodb import get_database
 from datetime import datetime
 import logging
 
@@ -24,7 +24,7 @@ router = APIRouter()
 @router.post("/message", response_model=ChatMessageResponse)
 async def send_chat_message(
     request: ChatMessageRequest,
-    db: Session = Depends(get_db)
+    db: DatabaseProxy = Depends(get_database)
 ):
     """
     Send a chat message and get AI response with citations
@@ -36,45 +36,57 @@ async def send_chat_message(
         conversation_repo = ConversationRepository(db)
         
         # Get or create conversation
-        if request.conversation_id:
-            conversation = conversation_repo.get_conversation(request.conversation_id)
+        # Handle empty strings, "null" literals, and None
+        conversation_id = request.conversation_id
+        if conversation_id and conversation_id.strip() and conversation_id.lower() != "null":
+            conversation = await conversation_repo.get_conversation(conversation_id)
             if not conversation:
                 raise HTTPException(status_code=404, detail="Conversation not found")
         else:
-            conversation = conversation_repo.create_conversation()
+            conversation = await conversation_repo.create_conversation()
         
         # Save user message
-        user_message = conversation_repo.add_message(
+        logger.info(f"Saving user message for conversation {conversation.id}")
+        user_message = await conversation_repo.add_message(
             conversation_id=conversation.id,
             role=Role.USER.value,
             content=request.content
         )
+        logger.info(f"User message saved: {user_message.id}")
         
         # Search for relevant documents
+        logger.info("Searching for relevant documents...")
         documents = await search_service.search_documents(request.content)
         citations = search_service.create_citations(documents)
+        logger.info(f"Found {len(citations)} citations")
         
         # Get conversation history for context
-        previous_messages = conversation_repo.get_conversation_messages(conversation.id)
+        logger.info("Getting conversation history...")
+        previous_messages = await conversation_repo.get_conversation_messages(conversation.id)
         message_history = [
             {"role": msg.role, "content": msg.content}
             for msg in previous_messages[:-1]  # Exclude the just-added user message
         ]
         message_history.append({"role": "user", "content": request.content})
+        logger.info(f"Message history has {len(message_history)} messages")
         
         # Get AI response with context
+        logger.info("Getting AI response...")
         ai_response = await ai_service.get_chat_completion(
             messages=message_history,
             context_documents=documents
         )
+        logger.info(f"AI response received: {ai_response[:100]}...")
         
         # Save assistant message with citations
-        assistant_message = conversation_repo.add_message(
+        logger.info("Saving assistant message...")
+        assistant_message = await conversation_repo.add_message(
             conversation_id=conversation.id,
             role=Role.ASSISTANT.value,
             content=ai_response,
             citations=citations
         )
+        logger.info(f"Assistant message saved: {assistant_message.id}")
         
         # Convert to response schemas
         user_msg_schema = MessageSchema(
@@ -111,21 +123,27 @@ async def send_chat_message(
 @router.get("/history/{conversation_id}", response_model=ConversationHistoryResponse)
 async def get_conversation_history(
     conversation_id: str,
-    db: Session = Depends(get_db)
+    db: DatabaseProxy = Depends(get_database)
 ):
     """
     Get conversation history with all messages
     """
     try:
+        logger.info(f"Getting history for conversation: {conversation_id}")
         conversation_repo = ConversationRepository(db)
-        conversation = conversation_repo.get_conversation_with_messages(conversation_id)
+        result = await conversation_repo.get_conversation_with_messages(conversation_id)
         
-        if not conversation:
+        logger.info(f"Result: {result is not None}")
+        if not result:
+            logger.warning(f"Conversation {conversation_id} not found")
             raise HTTPException(status_code=404, detail="Conversation not found")
+        
+        conversation = result["conversation"]
+        messages = result["messages"]
         
         # Convert messages to schemas
         message_schemas = []
-        for msg in conversation.messages:
+        for msg in messages:
             citations = None
             if msg.citations:
                 citations = [CitationSchema(**c) for c in msg.citations]

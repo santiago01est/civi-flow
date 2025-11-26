@@ -27,8 +27,10 @@ class Settings(BaseSettings):
     AZURE_SEARCH_API_KEY: str = ""
     AZURE_SEARCH_INDEX_NAME: str = ""
     
-    # Database
-    DATABASE_URL: str = "sqlite:///./civi-chat.db"
+    # Azure Cosmos DB SQL API
+    COSMOS_ENDPOINT: str = ""
+    COSMOS_KEY: str = ""
+    COSMOS_DATABASE_NAME: str = "civicflowcosmodb"
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379"

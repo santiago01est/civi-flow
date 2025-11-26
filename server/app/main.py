@@ -6,10 +6,7 @@ from contextlib import asynccontextmanager
 from app.config.settings import settings
 from app.api.v1.router import api_router
 from app.core.exceptions import setup_exception_handlers
-from app.db.base import Base
-from app.db.session import engine
-from app.models.conversation import Conversation, Message
-from app.models.notification import Notification
+from app.db.mongodb import connect_to_cosmos, close_cosmos_connection
 import logging
 from fastapi.responses import RedirectResponse
 
@@ -21,19 +18,22 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Civi Chat API...")
     
-    # Create database tables
-    logger.info("Creating database tables...")
-    Base.metadata.create_all(bind=engine)
-    logger.info("Database initialized successfully")
+    # Connect to Azure Cosmos DB
+    logger.info("Connecting to Azure Cosmos DB...")
+    await connect_to_cosmos()
+    logger.info("Cosmos DB connected successfully")
     
     yield
+    
     # Shutdown
     logger.info("Shutting down Civi Chat API...")
+    await close_cosmos_connection()
+    logger.info("Cosmos DB connection closed")
 
 app = FastAPI(
     title="Civi Chat API",
-    description="AI-powered civic engagement platform",
-    version="1.0.0",
+    description="AI-powered civic engagement platform with Azure Cosmos DB backend",
+    version="2.0.0",
     lifespan=lifespan
 )
 
