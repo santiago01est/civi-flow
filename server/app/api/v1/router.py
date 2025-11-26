@@ -2,7 +2,9 @@
 # app/api/v1/router.py
 
 from fastapi import APIRouter
-from app.api.v1.endpoints import chat, notifications
+from app.api.v1.endpoints import chat, notifications, document
+from app.api.v1.endpoints import health
+from app.api.v1.endpoints import rag
 
 api_router = APIRouter()
 
@@ -18,6 +20,24 @@ api_router.include_router(
     notifications.router,
     prefix="/notifications",
     tags=["notifications"]
+)
+
+
+api_router.include_router(
+    document.router,
+    prefix="/documents",
+    tags=["documents"]
+)
+
+api_router.include_router(
+    health.router,
+    tags=["health"]
+)
+
+api_router.include_router(
+    rag.router,
+    prefix="/rag",
+    tags=["RAG Pipeline"]
 )
 
 @api_router.get("/")

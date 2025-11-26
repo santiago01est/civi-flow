@@ -1,0 +1,15 @@
+{
+  "urls": [
+    {
+      "url": "https://www.registraduria.gov.co/",
+      "category": "government",
+      "description": "Registraduría Nacional del Estado Civil - Página oficial"
+    },
+    {
+      "url": "https://tribunalsuperiordecucuta.gov.co/",
+      "category": "legal",
+      "description": "Tribunal Superior de Cúcuta - Página oficial"
+    }
+    
+  ]
+}
