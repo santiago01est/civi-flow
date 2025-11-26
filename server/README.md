@@ -11,7 +11,7 @@ This microservice provides a RESTful API built with FastAPI, featuring AI-powere
 - **AI-Powered Chat**: Integration with Azure OpenAI and OpenAI APIs with intelligent fallback mechanisms
 - **Document Search**: Azure AI Search integration for government document retrieval
 - **Citation Management**: Automatic source attribution and reference linking
-- **Conversation Persistence**: SQLAlchemy-based conversation history with SQLite/PostgreSQL support
+- **Conversation Persistence**: MongoDB/Azure Cosmos DB for scalable, cloud-native data storage
 - **Notification System**: Real-time notification management
 - **Observability**: OpenTelemetry instrumentation for distributed tracing
 - **API Documentation**: Auto-generated OpenAPI/Swagger documentation
@@ -20,7 +20,8 @@ This microservice provides a RESTful API built with FastAPI, featuring AI-powere
 
 - **Framework**: FastAPI 0.100+
 - **AI/ML**: OpenAI SDK, Azure OpenAI SDK
-- **Database**: SQLAlchemy ORM (SQLite default, PostgreSQL production-ready)
+- **Database**: Motor (Async MongoDB Driver), Azure Cosmos DB for MongoDB API
+- **ODM**: Pydantic models with MongoDB integration
 - **Search**: Azure AI Search SDK
 - **Observability**: OpenTelemetry, Jaeger
 - **Containerization**: Docker, Docker Compose
@@ -205,9 +206,8 @@ server/
 │   │   ├── middleware.py           # HTTP middleware
 │   │   └── security.py             # Authentication & authorization
 │   ├── db/
-│   │   ├── base.py                 # SQLAlchemy base
-│   │   └── session.py              # Database session management
-│   ├── models/                     # SQLAlchemy ORM models
+│   │   └── mongodb.py              # MongoDB connection management
+│   ├── models/                     # Pydantic models for MongoDB
 │   │   ├── conversation.py         # Conversation & Message models
 │   │   ├── notification.py         # Notification model
 │   │   └── user.py                 # User model
@@ -276,7 +276,8 @@ The service uses environment variables for configuration. Copy `.env.example` to
 #### Required for Development (Mock Mode)
 
 ```env
-DATABASE_URL=sqlite:///./civi-chat.db
+MONGODB_URL=mongodb://localhost:27017
+MONGODB_DATABASE_NAME=civi_flow_db
 ALLOWED_ORIGINS=["http://localhost:5173"]
 ```
 
@@ -306,15 +307,25 @@ AZURE_SEARCH_INDEX_NAME=government-docs
 
 #### Database Configuration
 
-**Development (SQLite)**
+**Development (Local MongoDB)**
 ```env
-DATABASE_URL=sqlite:///./civi-chat.db
+MONGODB_URL=mongodb://localhost:27017
+MONGODB_DATABASE_NAME=civi_flow_db
 ```
 
-**Production (PostgreSQL)**
+**Production (Azure Cosmos DB for MongoDB)**
 ```env
-DATABASE_URL=postgresql://user:password@postgres:5432/civi_chat
+MONGODB_URL=mongodb://<account-name>:<password>@<account-name>.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000
+MONGODB_DATABASE_NAME=civi_flow_db
+MONGODB_MAX_POOL_SIZE=10
+MONGODB_MIN_POOL_SIZE=1
 ```
+
+**Azure Cosmos DB Setup:**
+1. Create Azure Cosmos DB account with MongoDB API
+2. Copy connection string from Azure Portal
+3. Replace `<account-name>` and `<password>` in MONGODB_URL
+4. Database and collections are created automatically on first use
 
 #### CORS Configuration
 
@@ -433,7 +444,7 @@ Use this endpoint for:
 ### Production Checklist
 
 - [ ] Set `ENVIRONMENT=production` in environment variables
-- [ ] Configure PostgreSQL database URL
+- [ ] Configure Azure Cosmos DB for MongoDB connection string
 - [ ] Set up proper CORS origins
 - [ ] Enable HTTPS/TLS
 - [ ] Configure Azure OpenAI (not OpenAI free tier)
@@ -529,8 +540,10 @@ print(result["assistant_message"]["content"])
 - **Note**: Service works with mock responses if neither is configured
 
 **Issue: Database connection errors**
-- **Solution**: Verify `DATABASE_URL` is correct
-- **Solution**: Ensure database file permissions (SQLite) or network access (PostgreSQL)
+- **Solution**: Verify `MONGODB_URL` connection string is correct
+- **Solution**: For Azure Cosmos DB, ensure firewall rules allow your IP
+- **Solution**: Check that MongoDB service is running (local) or Cosmos DB account is active (Azure)
+- **Solution**: Verify connection string includes SSL parameters for Cosmos DB
 
 **Issue: CORS errors from frontend**
 - **Solution**: Add your frontend URL to `ALLOWED_ORIGINS` in `.env`
