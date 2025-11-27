@@ -1,11 +1,13 @@
 # User notification preferences
 from fastapi import APIRouter, Depends, HTTPException
+from azure.cosmos.aio import DatabaseProxy
 from app.schemas.notification import (
     NotificationSchema,
     NotificationListResponse,
     NotificationCreateRequest
 )
 from app.repositories.notification_repository import NotificationRepository
+from app.db.mongodb import get_database
 from typing import Optional
 import logging
 
@@ -17,13 +19,15 @@ notification_repo = NotificationRepository()
 @router.get("", response_model=NotificationListResponse)
 async def get_notifications(
     user_id: Optional[str] = None,
-    limit: int = 50
+    limit: int = 50,
+    db: DatabaseProxy = Depends(get_database)
 ):
     """
     Get all notifications, optionally filtered by user
     """
     try:
-        notifications = notification_repo.get_all_notifications(user_id=user_id, limit=limit)
+        notification_repo = NotificationRepository(db)
+        notifications = await notification_repo.get_all_notifications(user_id=user_id, limit=limit)
         
         notification_schemas = [
             NotificationSchema.model_validate(notification)
@@ -43,12 +47,14 @@ async def get_notifications(
 @router.post("", response_model=NotificationSchema)
 async def create_notification(
     request: NotificationCreateRequest,
+    db: DatabaseProxy = Depends(get_database)
 ):
     """
     Create a new notification
     """
     try:
-        notification = notification_repo.create_notification(
+        notification_repo = NotificationRepository(db)
+        notification = await notification_repo.create_notification(
             title=request.title,
             message=request.message,
             type=request.type,
@@ -65,12 +71,14 @@ async def create_notification(
 @router.patch("/{notification_id}/read", response_model=NotificationSchema)
 async def mark_notification_read(
     notification_id: str,
+    db: DatabaseProxy = Depends(get_database)
 ):
     """
     Mark a notification as read
     """
     try:
-        notification = notification_repo.mark_as_read(notification_id)
+        notification_repo = NotificationRepository(db)
+        notification = await notification_repo.mark_as_read(notification_id)
         
         if not notification:
             raise HTTPException(status_code=404, detail="Notification not found")

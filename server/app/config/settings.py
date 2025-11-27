@@ -9,12 +9,29 @@ class Settings(BaseSettings):
     SERVICE_NAME: str = "civi-chat-api"
     ENVIRONMENT: str = "development"
     
-    # Azure Cosmos DB
-    COSMOS_DB_ENDPOINT: str = ""
-    COSMOS_DB_KEY: str = ""
-    COSMOS_DB_DATABASE_NAME: str = "civi-flow"
-    # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:5173"]
+    # Azure OpenTelemetry
+    OTEL_EXPORTER_OTLP_ENDPOINT: str = "http://localhost:4317"
+    ALLOWED_ORIGINS: list[str] = ["*"]
+    
+    # Azure OpenAI
+    AZURE_OPENAI_API_KEY: str = ""
+    AZURE_OPENAI_ENDPOINT: str = ""
+    AZURE_OPENAI_DEPLOYMENT_NAME: str = ""
+    AZURE_OPENAI_API_VERSION: str = "2024-02-01"
+    
+    # OpenAI (alternativa a Azure)
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-4o-mini"  # o gpt-4, gpt-3.5-turbo, etc.
+    
+    # Azure Search
+    AZURE_SEARCH_ENDPOINT: str = ""
+    AZURE_SEARCH_API_KEY: str = ""
+    AZURE_SEARCH_INDEX_NAME: str = ""
+    
+    # Azure Cosmos DB SQL API
+    COSMOS_ENDPOINT: str = ""
+    COSMOS_KEY: str = ""
+    COSMOS_DATABASE_NAME: str = "civicflowcosmodb"
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379"
