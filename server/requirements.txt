@@ -4,6 +4,11 @@ uvicorn[standard]
 pydantic
 pydantic-settings
 
+aiohttp
+pdfplumber
+python-docx
+
+
 # Web Server for Production
 gunicorn
 
@@ -21,6 +26,13 @@ azure-identity
 openai  # This includes AzureOpenAI client
 azure-search-documents
 azure-ai-contentsafety
+
+azure-keyvault-secrets
+azure-identity
+
+azure-storage-blob
+azure-cosmos
+
 
 # OpenTelemetry Core
 opentelemetry-api
@@ -47,4 +59,9 @@ celery
 # Utilities
 python-dotenv
 httpx
+
+beautifulsoup4
+aiohttp
+tiktoken
+
 
