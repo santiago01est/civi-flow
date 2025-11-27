@@ -12,10 +12,8 @@ python-docx
 # Web Server for Production
 gunicorn
 
-# Database
-sqlalchemy
-alembic
-psycopg2-binary
+# Database - Azure Cosmos DB (SQL API)
+azure-cosmos  # Azure Cosmos DB SDK
 
 # Authentication & Security
 python-multipart
@@ -43,7 +41,6 @@ opentelemetry-instrumentation
 
 # OpenTelemetry Instrumentations
 opentelemetry-instrumentation-fastapi
-opentelemetry-instrumentation-sqlalchemy
 opentelemetry-instrumentation-redis
 opentelemetry-instrumentation-requests
 deprecated

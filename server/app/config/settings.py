@@ -3,8 +3,12 @@
 
 import os
 from pydantic_settings import BaseSettings
+<<<<<<< HEAD
 from typing import List, Optional
 from functools import lru_cache
+=======
+from typing import List
+>>>>>>> main
 
 class Settings(BaseSettings):
     """
@@ -75,10 +79,25 @@ class Settings(BaseSettings):
     AZURE_SEARCH_KEY: Optional[str] = None
     AZURE_SEARCH_INDEX_NAME: str = "government-data"
     
+<<<<<<< HEAD
     # ========================================================================
     # Telegram
     # ========================================================================
     TELEGRAM_BOT: Optional[str] = None
+=======
+    # Azure Search
+    AZURE_SEARCH_ENDPOINT: str = ""
+    AZURE_SEARCH_API_KEY: str = ""
+    AZURE_SEARCH_INDEX_NAME: str = ""
+    
+    # Azure Cosmos DB SQL API
+    COSMOS_ENDPOINT: str = ""
+    COSMOS_KEY: str = ""
+    COSMOS_DATABASE_NAME: str = "civicflowcosmodb"
+    
+    # Redis
+    REDIS_URL: str = "redis://localhost:6379"
+>>>>>>> main
     
     class Config:
         env_file = ".env"

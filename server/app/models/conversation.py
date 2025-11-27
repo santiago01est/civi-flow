@@ -1,35 +1,61 @@
-# Chat history models
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey, JSON
-from sqlalchemy.orm import relationship
+# Azure Cosmos DB conversation and message models
+from pydantic import BaseModel, Field
+from typing import Optional, List
 from datetime import datetime
-from app.db.base import Base
 import uuid
 
-
-class Conversation(Base):
-    """Conversation model for storing chat sessions"""
-    __tablename__ = "conversations"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, nullable=True)  # Optional user tracking
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-    
-    # Relationship to messages
-    messages = relationship("Message", back_populates="conversation", cascade="all, delete-orphan")
-
-
 class Message(Base):
-    """Message model for storing individual messages in conversations"""
-    __tablename__ = "messages"
+    role: str
+    content: str
+    citations: Optional[List[dict]] = None
+    is_thinking: str = "false"
+
+class Message(BaseModel):
+    """Message model for Cosmos DB"""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    conversation_id: str
+    role: str  # "user" or "model"
+    content: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    citations: Optional[List[dict]] = None
+    is_thinking: bool = False
     
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    conversation_id = Column(String, ForeignKey("conversations.id"), nullable=False)
-    role = Column(String, nullable=False)  # "user" or "model"
-    content = Column(Text, nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow, nullable=False)
-    citations = Column(JSON, nullable=True)  # Store citations as JSON array
-    is_thinking = Column(String, default="false")  # Store as string for compatibility
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat() if v else None
+        }
+        json_schema_extra = {
+            "example": {
+                "id": "msg-123",
+                "conversation_id": "conv-456",
+                "role": "user",
+                "content": "What are the zoning regulations?",
+                "timestamp": "2025-11-24T10:00:00Z",
+                "citations": None,
+                "is_thinking": False
+            }
+        }
+
+
+class Conversation(BaseModel):
+    """Conversation model for Cosmos DB"""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    message_count: int = 0
     
-    # Relationship to conversation
-    conversation = relationship("Conversation", back_populates="messages")
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat() if v else None
+        }
+        json_schema_extra = {
+            "example": {
+                "id": "conv-123",
+                "user_id": "user123",
+                "created_at": "2025-11-24T10:00:00Z",
+                "updated_at": "2025-11-24T10:05:00Z",
+                "message_count": 4
+            }
+        }
+

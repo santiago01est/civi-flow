@@ -2,9 +2,9 @@
 # app/api/v1/router.py
 
 from fastapi import APIRouter
-from app.api.v1.endpoints import chat, notifications, document
-from app.api.v1.endpoints import health
-from app.api.v1.endpoints import rag
+<<<<<<< HEAD
+from app.api.v1.endpoints import chat, notifications, document, health, rag, webhooks, users
+>>>>>>> main
 
 api_router = APIRouter()
 
@@ -22,6 +22,7 @@ api_router.include_router(
     tags=["notifications"]
 )
 
+<<<<<<< HEAD
 
 api_router.include_router(
     document.router,
@@ -39,6 +40,17 @@ api_router.include_router(
     prefix="/rag",
     tags=["RAG Pipeline"]
 )
+
+# Include user endpoints
+api_router.include_router(
+    users.router,
+    prefix="/users",
+    tags=["users"]
+)
+
+# webhooks endpoints
+api_router.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])
+>>>>>>> main
 
 @api_router.get("/")
 async def root():
