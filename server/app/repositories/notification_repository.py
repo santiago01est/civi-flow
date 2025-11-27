@@ -7,6 +7,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+class NotificationRepository(BaseRepository[Notification]):
+    def __init__(self):
+        super().__init__("notifications", Notification)
 
 class NotificationRepository:
     """Repository for managing notifications with Azure Cosmos DB"""
@@ -22,7 +25,6 @@ class NotificationRepository:
         type: str = "info",
         user_id: Optional[str] = None
     ) -> Notification:
-        """Create a new notification"""
         notification = Notification(
             title=title,
             message=message,

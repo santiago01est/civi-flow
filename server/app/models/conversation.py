@@ -4,6 +4,11 @@ from typing import Optional, List
 from datetime import datetime
 import uuid
 
+class Message(Base):
+    role: str
+    content: str
+    citations: Optional[List[dict]] = None
+    is_thinking: str = "false"
 
 class Message(BaseModel):
     """Message model for Cosmos DB"""

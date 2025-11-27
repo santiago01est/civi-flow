@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.config.settings import settings
 from app.api.v1.router import api_router
+from app.db.session import init_cosmos, close_cosmos
 from app.core.exceptions import setup_exception_handlers
 from app.db.mongodb import connect_to_cosmos, close_cosmos_connection
 import logging
@@ -26,6 +27,10 @@ async def lifespan(app: FastAPI):
     yield
     
     # Shutdown
+    try:
+        close_cosmos()
+    except Exception:
+        logger.exception("Error closing Cosmos client on shutdown")
     logger.info("Shutting down Civi Chat API...")
     await close_cosmos_connection()
     logger.info("Cosmos DB connection closed")

@@ -19,7 +19,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
+conversation_repo = ConversationRepository()
 
 @router.post("/message", response_model=ChatMessageResponse)
 async def send_chat_message(
@@ -33,7 +33,6 @@ async def send_chat_message(
         # Initialize services
         ai_service = AzureOpenAIService()
         search_service = SearchService()
-        conversation_repo = ConversationRepository(db)
         
         # Get or create conversation
         # Handle empty strings, "null" literals, and None
@@ -46,6 +45,8 @@ async def send_chat_message(
             conversation = await conversation_repo.create_conversation()
         
         # Save user message
+        conversation_repo.add_message(
+
         logger.info(f"Saving user message for conversation {conversation.id}")
         user_message = await conversation_repo.add_message(
             conversation_id=conversation.id,
@@ -65,7 +66,7 @@ async def send_chat_message(
         previous_messages = await conversation_repo.get_conversation_messages(conversation.id)
         message_history = [
             {"role": msg.role, "content": msg.content}
-            for msg in previous_messages[:-1]  # Exclude the just-added user message
+            for msg in previous_messages
         ]
         message_history.append({"role": "user", "content": request.content})
         logger.info(f"Message history has {len(message_history)} messages")
@@ -79,6 +80,7 @@ async def send_chat_message(
         logger.info(f"AI response received: {ai_response[:100]}...")
         
         # Save assistant message with citations
+        conversation = conversation_repo.add_message(
         logger.info("Saving assistant message...")
         assistant_message = await conversation_repo.add_message(
             conversation_id=conversation.id,
@@ -88,6 +90,9 @@ async def send_chat_message(
         )
         logger.info(f"Assistant message saved: {assistant_message.id}")
         
+        user_message = next((msg for msg in conversation.messages if msg.role == Role.USER.value), None)
+        assistant_message = next((msg for msg in conversation.messages if msg.role == Role.ASSISTANT.value), None)
+
         # Convert to response schemas
         user_msg_schema = MessageSchema(
             id=user_message.id,
@@ -129,6 +134,7 @@ async def get_conversation_history(
     Get conversation history with all messages
     """
     try:
+        conversation = conversation_repo.get_conversation_with_messages(conversation_id)
         logger.info(f"Getting history for conversation: {conversation_id}")
         conversation_repo = ConversationRepository(db)
         result = await conversation_repo.get_conversation_with_messages(conversation_id)

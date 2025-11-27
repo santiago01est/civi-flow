@@ -7,6 +7,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+class ConversationRepository(BaseRepository[Conversation]):
+    def __init__(self, container=None):
+        super().__init__("conversations", Conversation, container=container)
 
 class ConversationRepository:
     """Repository for managing conversations with Azure Cosmos DB"""
@@ -45,10 +48,12 @@ class ConversationRepository:
         role: str,
         content: str,
         citations: Optional[List[dict]] = None
-    ) -> Message:
-        """Add a message to a conversation"""
+    ) -> Optional[Conversation]:
+        conversation = self.get_conversation(conversation_id)
+        if not conversation:
+            return None
+        
         message = Message(
-            conversation_id=conversation_id,
             role=role,
             content=content,
             citations=citations,

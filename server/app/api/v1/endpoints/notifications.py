@@ -14,7 +14,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
+notification_repo = NotificationRepository()
 
 @router.get("", response_model=NotificationListResponse)
 async def get_notifications(
